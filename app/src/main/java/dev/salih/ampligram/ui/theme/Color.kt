@@ -1,0 +1,28 @@
+package dev.salih.ampligram.ui.theme
+import androidx.compose.ui.graphics.Color
+
+val md_theme_light_primary = Color(0xFF006A64)
+val md_theme_light_onPrimary = Color(0xFFFFFFFF)
+val md_theme_light_primaryContainer = Color(0xFF71F7EC)
+val md_theme_light_secondary = Color(0xFF0661A4)
+val md_theme_light_onSecondary = Color(0xFFFFFFFF)
+val md_theme_light_secondaryContainer = Color(0xFFD2E4FF)
+val md_theme_light_error = Color(0xFFBA1A1A)
+val md_theme_light_onError = Color(0xFFFFFFFF)
+val md_theme_light_background = Color(0xFFFAFDFB)
+val md_theme_light_onBackground = Color(0xFF191C1C)
+val md_theme_light_surface = Color(0xFFFAFDFB)
+val md_theme_light_onSurface = Color(0xFF191C1C)
+
+val md_theme_dark_primary = Color(0xFF4FDBD0)
+val md_theme_dark_onPrimary = Color(0xFF003734)
+val md_theme_dark_primaryContainer = Color(0xFF00504B)
+val md_theme_dark_secondary = Color(0xFF9FCAFF)
+val md_theme_dark_onSecondary = Color(0xFF003259)
+val md_theme_dark_secondaryContainer = Color(0xFF00497E)
+val md_theme_dark_error = Color(0xFFFFB4AB)
+val md_theme_dark_onError = Color(0xFF690005)
+val md_theme_dark_background = Color(0xFF191C1C)
+val md_theme_dark_onBackground = Color(0xFFE0E3E2)
+val md_theme_dark_surface = Color(0xFF191C1C)
+val md_theme_dark_onSurface = Color(0xFFE0E3E2)
