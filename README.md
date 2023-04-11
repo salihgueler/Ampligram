@@ -83,41 +83,32 @@ You can use Amplify CLI for:
 - Verify that you are running at least Node.js version 12.x and npm version 6.x or greater by running node -v and npm -v in a terminal/console window
 - Create AWS Account. If you don't already have an AWS account, you'll need to create one in order to follow the steps outlined in this tutorial.
 
-::::tabs
-
-:::tab{label="NPM"}
-:::code{language=bash}
+**NPM**
+```bash
 npm install -g @aws-amplify/cli
-:::
-:::
+```
 
-:::tab{label="cURL (macOS and Linux)"}
-:::code{language=bash}
+**cURL (macOS and Linux)**
+```bash
 curl -sL https://aws-amplify.github.io/amplify-cli/install | bash && $SHELL
-:::
-:::
+```
 
-:::tab{label="cURL (Windows)"}
-:::code{language=bash}
+**cURL (Windows)**
+```bash
 curl -sL https://aws-amplify.github.io/amplify-cli/install-win -o install.cmd && install.cmd
-:::
-:::
-
-::::
+```
 
 ### Configuring Amplify CLI
 
 Run the following command to start the configuration process:
 
-:::code{language=bash showLineNumbers=false}
+```bash
 amplify configure
-:::
+```
 
 This command will ask you to sign into the AWS Console. Afterwards, select a region to create the project. After that, navigate to the [IAM User creation page](https://console.aws.amazon.com/iamv2/home#/users/create) if it's not already open.
 
-:::alert{header="Before you continue" type="warning"}
-Keep your terminal open until you come back to it at at later stage from where you left of.
-:::
+> Keep your terminal open until you come back to it at at later stage from where you left of.
 
 ![User creation page](https://docs.amplify.aws/images/cli/user-creation/user-name.png)
 
@@ -147,6 +138,7 @@ Select *Command Line Interface*, check the checkbox for the warning, and select 
 
 Copy these values and paste them into the terminal and give a profile name.
 
+```bash
 :::code{language=bash showLineNumbers=false}
 Specify the AWS Region
 ? region:  # Your preferred region
@@ -165,7 +157,7 @@ This would update/create the AWS Profile in your local machine
 ? Profile Name:  # (default)
 
 Successfully set up the new user.
-:::
+```
 
 Now you are ready to use Amplify CLI.
 
@@ -192,6 +184,4 @@ You can also generate React code from your Figma designs. You can use the Figma 
 
 ![Amplify Studio Figma to Code](/static/figmatocode.png)
 
-:::alert{header="Warning" type="warning"}
-Amplify Studio's UI features such as creating data and ui component builders are free. For pulling the data to your local machine, you will need to have Amplify CLI configured.
-:::
+>Amplify Studio's UI features such as creating data and ui component builders are free. For pulling the data to your local machine, you will need to have Amplify CLI configured.
