@@ -185,3 +185,114 @@ You can also generate React code from your Figma designs. You can use the Figma 
 ![Amplify Studio Figma to Code](/static/figmatocode.png)
 
 >Amplify Studio's UI features such as creating data and ui component builders are free. For pulling the data to your local machine, you will need to have Amplify CLI configured.
+
+## Initializing Amplify Project
+
+For starting off, you need to clone the starter project. You can clone the starter project from [here](https://github.com/salihgueler/Ampligram/tree/starter_project). After cloning the project, you need to initialize the project. Before initializing be sure the terminal is in the project directory.
+
+```bash
+cd wherever/project/is/at/Ampligram
+```
+
+## Initializing Amplify Project
+
+To initialize the project, you need to run the following command:
+
+```bash
+amplify init
+```
+
+First select a project name, you can also accept the suggested name by using the name in the parenthesis by clicking *Enter*:
+
+```bash
+Note: It is recommended to run this command from the root of your app directory
+? Enter a name for the project (Ampligram) 
+``` 
+
+Then you can either select the default configuration or you can change it by writing *n* later on:
+
+```bash
+The following configuration will be applied:
+
+Project information
+| Name: Ampligram
+| Environment: dev
+| Default editor: Visual Studio Code
+| App type: android
+| Res directory: app/src/main/res
+
+? Initialize the project with the above configuration? (Y/n) 
+```
+
+Select the default configuration by clicking *Enter*.
+
+```bash
+? Select the authentication method you want to use: (Use arrow keys)
+❯ AWS profile 
+```
+
+Select the *AWS profile* from the list and select the profile that you created before:
+
+```bash
+? Please choose the profile you want to use (default) 
+```
+
+Then wait for it to initialize the project. After the initialization is done, you can see the following message:
+
+```bash
+Deployment state saved successfully.
+✔ Initialized provider successfully.
+✅ Initialized your environment successfully.
+```
+
+Now it is time to initialize the Amplify Libraries to the project.
+
+```groovy
+android {
+    compileOptions {
+        // Support for Java 8 features
+        coreLibraryDesugaringEnabled true
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+dependencies {
+    // Amplify core dependency
+    implementation 'com.amplifyframework:core:2.5.0'
+
+    // Support for Java 8 features
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.1.5'
+}
+```
+
+Add the above code to the `build.gradle` file in the `app` directory. After adding the code, you need to sync the project.
+
+Lastly, update the `AmplifyApp` as the following:
+
+```kotlin
+import android.app.Application
+import android.util.Log
+import com.amplifyframework.AmplifyException
+import com.amplifyframework.core.Amplify
+import dagger.hilt.android.HiltAndroidApp
+
+@HiltAndroidApp
+class AmpligramApp: Application() {
+    override fun onCreate() {
+        super.onCreate()
+        try {
+            Amplify.configure(applicationContext)
+            Log.i("Ampligram", "Initialized Amplify")
+        } catch (error: AmplifyException) {
+            Log.e("Ampligram", "Could not initialize Amplify", error)
+        }
+    }
+}
+```
+
+When you run the app, if you see the following log, it means that you have successfully initialized the project:
+
+```bash
+2023-11-03 14:00:00.000 12345-12345/dev.salih.ampligram I/Ampligram: Initialized Amplify
+```
