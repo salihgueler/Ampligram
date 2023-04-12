@@ -34,10 +34,10 @@ class ProfileViewModel @Inject constructor(
     }
 
     private fun getProfileInformation() {
-        _uiState.value = ProfileUiState.Loading
-        val result = photoRepository.getPhotos()
-        if (result.isSuccess) {
-            viewModelScope.launch {
+        viewModelScope.launch {
+            _uiState.value = ProfileUiState.Loading
+            val result = photoRepository.getPhotos()
+            if (result.isSuccess) {
                 val currentUser = userRepository.getCurrentUser()
                 Log.e("Ampligram", currentUser.toString())
                 if (currentUser.isSuccess) {
@@ -49,12 +49,12 @@ class ProfileViewModel @Inject constructor(
                             ?: "Something went wrong while retrieving user information. $currentUser"
                     )
                 }
+            } else {
+                _uiState.value = ProfileUiState.Error(
+                    result.exceptionOrNull()?.message
+                        ?: "Something went wrong while retrieving photos. $result"
+                )
             }
-        } else {
-            _uiState.value = ProfileUiState.Error(
-                result.exceptionOrNull()?.message
-                    ?: "Something went wrong while retrieving photos. $result"
-            )
         }
     }
 

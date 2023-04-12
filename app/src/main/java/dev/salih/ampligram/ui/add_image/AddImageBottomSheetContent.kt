@@ -30,16 +30,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import java.io.InputStream
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun AddImageBottomSheetContent(
-    onPhotoAdded: (String, String) -> Unit,
+    onPhotoAdded: (InputStream, String) -> Unit,
     shouldShowKeyboard: Boolean = false
 ) {
     var value by remember { mutableStateOf("") }
@@ -49,6 +51,7 @@ fun AddImageBottomSheetContent(
     val focusRequester = remember { FocusRequester() }
     val keyboard = LocalSoftwareKeyboardController.current
     val focusManager = LocalFocusManager.current
+    val context = LocalContext.current
 
     LaunchedEffect(focusRequester) {
         if (shouldShowKeyboard) {
@@ -135,8 +138,12 @@ fun AddImageBottomSheetContent(
                 .fillMaxWidth(),
             onClick = {
                 if (selectedImageUri != null && value.isNotBlank()) {
+                    val inputStream =
+                        context.contentResolver.openInputStream(selectedImageUri!!)
                     value = ""
-                    onPhotoAdded(selectedImageUri.toString(), value)
+                    if (inputStream != null) {
+                        onPhotoAdded(inputStream, value)
+                    }
                     selectedImageUri = null
                 }
             }

@@ -1,18 +1,35 @@
 package dev.salih.ampligram.data.photo.impl
 
+import com.amplifyframework.kotlin.core.Amplify
 import dev.salih.ampligram.data.photo.PhotoRepository
 import dev.salih.ampligram.model.Comment
 import dev.salih.ampligram.model.Photo
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
+import java.io.InputStream
+import java.util.*
 
 private val photos = mutableListOf<Photo>()
 
 class FakePhotoRepositoryImpl : PhotoRepository {
-    override fun getPhotos(): Result<List<Photo>> {
-        val list = mutableListOf<Photo>()
-        photos.forEach {
-            list.add(it.copy())
+    override suspend fun getPhotos(): Result<List<Photo>> {
+        return runCatching {
+            val imageKeys = Amplify.Storage.list("")
+            val urls = imageKeys.items.map { Amplify.Storage.getUrl(it.key).url }
+            urls.forEachIndexed { index, url ->
+                val photo = Photo(
+                    id = "${index + 1}",
+                    description = "Description ${index + 1}",
+                    username = "Username ${index + 1}",
+                    url = url.toString(),
+                    isFavorite = false,
+                    comments = emptyList(),
+                    location = "Berlin, Germany"
+                )
+                photos.add(photo)
+            }
+            return Result.success(photos)
         }
-        return Result.success(list)
     }
 
     override fun toggleFavorite(id: String): Result<Unit> {
@@ -50,7 +67,7 @@ class FakePhotoRepositoryImpl : PhotoRepository {
     }
 
     override fun addPhoto(
-        photoUri: String,
+        photoKey: String,
         description: String,
         username: String
     ): Result<Unit> {
@@ -62,7 +79,7 @@ class FakePhotoRepositoryImpl : PhotoRepository {
         val photo = Photo(
             id = id,
             username = username,
-            url = photoUri,
+            url = photoKey,
             description = description,
             isFavorite = false,
             comments = emptyList(),
@@ -72,5 +89,12 @@ class FakePhotoRepositoryImpl : PhotoRepository {
         return Result.success(Unit)
     }
 
-
+    @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
+    override suspend fun uploadImage(imageStream: InputStream): Result<String> {
+        return runCatching {
+            val photoId = UUID.randomUUID().toString()
+            Amplify.Storage.uploadInputStream("$photoId.png", imageStream).result()
+            photoId
+        }
+    }
 }

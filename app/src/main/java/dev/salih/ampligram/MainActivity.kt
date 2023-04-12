@@ -61,8 +61,8 @@ class MainActivity : ComponentActivity() {
                                         navController.navigate("photo-detail/${it}/shouldShowCommentEntry=false")
                                     },
                                     onLocationClick = { },
-                                    onPhotoAdded = { photoUrl, description ->
-                                        homeViewModel.addPhoto(photoUrl, description)
+                                    onPhotoAdded = { photoStream, description ->
+                                        homeViewModel.addPhoto(photoStream, description)
                                     },
                                     isLoading = state is HomeUiState.Loading,
                                     photos = photos

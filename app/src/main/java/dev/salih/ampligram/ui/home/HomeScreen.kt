@@ -37,6 +37,7 @@ import dev.salih.ampligram.ui.components.common.AmpligramTopAppBar
 import dev.salih.ampligram.ui.components.common.CenteredCircularProgressIndicator
 import dev.salih.ampligram.ui.components.photo.PhotoCard
 import kotlinx.coroutines.launch
+import java.io.InputStream
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
@@ -46,7 +47,7 @@ fun HomeScreen(
     onCommentClick: (String) -> Unit,
     onImageClick: (String) -> Unit,
     onLocationClick: (String) -> Unit,
-    onPhotoAdded: (String, String) -> Unit,
+    onPhotoAdded: (InputStream, String) -> Unit,
     photos: List<Photo>,
     isLoading: Boolean,
 ) {
@@ -59,8 +60,8 @@ fun HomeScreen(
     ModalBottomSheetLayout(
         sheetContent = {
             AddImageBottomSheetContent(
-                onPhotoAdded = { photoUri, description ->
-                    onPhotoAdded(photoUri, description)
+                onPhotoAdded = { photoStream, description ->
+                    onPhotoAdded(photoStream, description)
                     coroutineScope.launch {
                         modalBottomSheetState.hide()
                     }

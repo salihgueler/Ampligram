@@ -77,7 +77,7 @@ fun ProfileScreen(
                 items(photos) { photo ->
                     PhotoThumbnail(
                         imageUrl = photo.url,
-                        contentDescription = photo.url,
+                        contentDescription = photo.description,
                         onImageClicked = { onImageClick(photo.id)}
                     )
                 }

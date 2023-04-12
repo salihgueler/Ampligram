@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import java.io.InputStream
 import javax.inject.Inject
 
 sealed class HomeUiState {
@@ -33,14 +34,16 @@ class HomeViewModel @Inject constructor(
     }
 
     private fun getPhotos() {
-        _uiState.value = HomeUiState.Loading
-        val result = photoRepository.getPhotos()
-        if (result.isSuccess) {
-            _uiState.value = HomeUiState.Success(result.getOrThrow())
-        } else {
-            _uiState.value = HomeUiState.Error(
-                result.exceptionOrNull()?.message ?: "Something went wrong. $result"
-            )
+        viewModelScope.launch {
+            _uiState.value = HomeUiState.Loading
+            val result = photoRepository.getPhotos()
+            if (result.isSuccess) {
+                _uiState.value = HomeUiState.Success(result.getOrThrow())
+            } else {
+                _uiState.value = HomeUiState.Error(
+                    result.exceptionOrNull()?.message ?: "Something went wrong. $result"
+                )
+            }
         }
     }
 
@@ -55,12 +58,13 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    fun addPhoto(photoUrl: String, description: String) {
+    fun addPhoto(photoStream: InputStream, description: String) {
         viewModelScope.launch {
             val usernameResult = userRepository.getCurrentUser()
+            val photoKey = photoRepository.uploadImage(photoStream).getOrThrow()
             if (usernameResult.isSuccess) {
                 val result = photoRepository.addPhoto(
-                    photoUrl,
+                    photoKey,
                     description,
                     usernameResult.getOrThrow().username
                 )
