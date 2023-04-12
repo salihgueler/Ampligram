@@ -98,7 +98,7 @@ Once the sync is done, go to the *AmpligramApp* class and update the code in **o
 
 ```kotlin
 try { 
-  ++Amplify.addPlugin(AWSCognitoAuthPlugin())
+    Amplify.addPlugin(AWSCognitoAuthPlugin())
     Amplify.configure(applicationContext)
     Log.i("Ampligram", "Initialized Amplify")
 } catch (error: AmplifyException) {
@@ -120,15 +120,15 @@ Authenticator {
 Lastly, let's add a sign-out functionality and show how one can use the auth libraries. To do that, update the *AmpligramTopAppBar* at the *ProfileScreen* function:
 
 ```kotlin 
-AmpligramTopAppBar(
+fun AmpligramTopAppBar(
     isBackButtonEnabled = isBackButtonEnabled,
     onBackButtonClick = onBackButtonClick,
     title = "Profile",
-  ++actions = {
-  ++    IconButton(onClick = onLogoutButtonClick) {
-  ++        Icon(Icons.Default.ExitToApp, contentDescription = "Profile")
-  ++    }
-  ++}
+    actions = {
+        IconButton(onClick = onLogoutButtonClick) {
+            Icon(Icons.Default.ExitToApp, contentDescription = "Profile")
+        }
+    }
 )
 ```
 
@@ -138,8 +138,8 @@ And add the callback to the paramters of the function:
 @Composable
 fun ProfileScreen(
     isBackButtonEnabled: Boolean,
-    onBackButtonClick: () -> Unit,
-  ++onLogoutButtonClick: () -> Unit,
+    onBackButtonClick: () -> Unit, 
+    onLogoutButtonClick: () -> Unit,
     onImageClick: (String) -> Unit,
     username: String,
     profilePictureUrl: String,
