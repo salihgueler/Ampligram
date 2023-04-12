@@ -17,201 +17,282 @@ In this workshop, you will learn how you can develop a photo sharing application
 - Android Studio version 4.0 or higher
 - Android SDK API level 24 (Android 7.0) or higher
 
-The Amplify Auth category provides an interface for authenticating a user. Behind the scenes, it provides the necessary authorization to the other Amplify categories. It comes with default, built-in support for Amazon Cognito User Pool and Identity Pool. The Amplify CLI helps you create and configure the auth category with an authentication provider.
+# What is AWS Amplify?
 
-## Adding Authentication to Project Setup
+AWS Amplify is the set of tools that is aimed to help web and mobile developers to develop full stack applications.
 
-To add authentication to your project, run the following command:
+![AWS Amplify Category](/static/awsamplify.jpg)
 
+With AWS Amplify, you can build your backend visually for all apps, build and host your web applications and use AWS technologies.
+
+You can use AWS Amplify with:
+- [Amplify Libraries](#amplify_libraries) are powered by the AWS cloud and offer a pluggable model which can be extended to use other providers.
+- [Amplify CLI](#amplify_cli) is a unified toolchain to create, integrate, and manage the AWS cloud services for your app.
+- [Amplify Studio](#amplify_studio) is a visual development environment for building fullstack web and mobile apps.
+
+## Amplify Libraries
+
+The Amplify open-source client libraries provide use-case centric, opinionated, declarative, and easy-to-use interfaces across different categories of cloud powered operations enabling mobile and web developers to easily interact with their backends.
+
+These libraries are powered by the AWS cloud and offer a pluggable model which can be extended to use other providers. The libraries can be used with both new backends created using the Amplify CLI and existing backend resources.
+
+**For Android AWS Amplify supports the following categories:**
+
+![Amplify Libraries](amplify_libraries)
+
+- **Analytics**
+    - The Analytics category enables you to collect analytics data for your App. The Analytics category comes with built-in support for Amazon Pinpoint and Amazon Kinesis (Kinesis support is currently only available in the Amplify JavaScript library).
+- **GraphQL API**
+    - The GraphQL API category provides an interface for retrieving and persisting your model data. The API category comes with default built-in support for AWS AppSync. The Amplify CLI allows you to define your API and provision a GraphQL service with CRUD operations and real-time functionality.
+- **REST API**
+    - The REST API category provides an interface for making requests to your backend. The Amplify CLI deploys REST APIs and handlers using Amazon API Gateway and AWS Lambda.
+- **Authentication**
+    - The Amplify Auth category provides an interface for authenticating a user. Behind the scenes, it provides the necessary authorization to the other Amplify categories. It comes with default, built-in support for Amazon Cognito User Pool and Identity Pool. The Amplify CLI helps you create and configure the auth category with an authentication provider.
+- **DataStore**
+    - Amplify DataStore provides a programming model for leveraging shared and distributed data without writing additional code for offline and online scenarios, which makes working with distributed, cross-user data just as simple as working with local-only data.
+- **Geo**
+    - Amplify Geo provides APIs and map UI components for mobile app development such that you can add maps to your app in just a few lines of code. Amplify Geo APIs are powered by Amazon Location Service and the map UI components from MapLibre are already integrated with the Geo APIs. You can quickly get started using Amplify CLI to provision your map resources.
+- **Predictions**
+    - The Predictions category enables you to integrate machine learning into your application without any prior machine learning experience. It supports translating text from one language to another, converting text to speech, text recognition from an image, entities recognition, labeling real world objects, interpretation of text, and uploading images for automatic training. This functionality is powered by AWS services including: Amazon Translate, Amazon Polly, Amazon Transcribe, Amazon Rekognition, Amazon Textract, and Amazon Comprehend.
+- **Push notifications**
+    - The Push Notifications category allows you to integrate push notifications in your app with Amazon Pinpoint targeting, campaign, and journey management support. You can segment your users, trigger push notifications to your app, and record metrics in Pinpoint when users receive or open notifications. Amazon Pinpoint helps you to create messaging campaigns and journeys targeted to specific user segments or demographics and collect interaction metrics with push notifications.
+- **Storage**
+  - The Storage category enables you to store and retrieve files from the cloud. The Amplify CLI helps you to configure the Storage category with Amazon S3, Amazon DynamoDB, and Amazon Simple Storage Service (Amazon S3) as the backend storage provider.
+
+## [Amplify CLI](amplify_cli)
+
+The Amplify Command Line Interface (CLI) is a unified toolchain to create, integrate, and manage the AWS cloud services for your app.
+
+![Amplify CLI features](/static/amplifycli.gif)
+
+You can use Amplify CLI for:
+- Data modeling with GraphQL
+- Managing multiple environments
+- Manage extensibility
+    - Override generated resources
+    - Add custom AWS resources
+    - Import existing AWS resources
+    - Command hooks
+    - Export Amplify project to CDK
+
+### Installing Amplify CLI
+
+**Requirements**
+
+- Install Node.js® and NPM if they are not already on your machine.
+- Verify that you are running at least Node.js version 12.x and npm version 6.x or greater by running node -v and npm -v in a terminal/console window
+- Create AWS Account. If you don't already have an AWS account, you'll need to create one in order to follow the steps outlined in this tutorial.
+
+**NPM**
 ```bash
-amplify add auth
+npm install -g @aws-amplify/cli
 ```
 
-Like the other processes, authentication also will guide you through the process of adding authentication to your project. You will be asked to select the default configuration or select a social provider as well as configuring the app authentication manually. For this workshop you will be using the default.
-
+**cURL (macOS and Linux)**
 ```bash
-Using service: Cognito, provided by: awscloudformation
- 
- The current configured provider is Amazon Cognito. 
- 
- Do you want to use the default authentication and security configuration? (Use arrow keys)
-❯ Default configuration 
-  Default configuration with Social Provider (Federation) 
-  Manual configuration 
-  I want to learn more. 
+curl -sL https://aws-amplify.github.io/amplify-cli/install | bash && $SHELL
 ```
 
-Next, selecct the type of "sign in" that you want to use. No matter what you select, you will be expected to have email entry from user for approving the account. For this workshop, you will be using *username*.
-
+**cURL (Windows)**
 ```bash
-  How do you want users to be able to sign in? (Use arrow keys)
-❯ Username 
-  Email 
-  Phone Number 
-  Email or Phone Number 
-  I want to learn more. 
+curl -sL https://aws-amplify.github.io/amplify-cli/install-win -o install.cmd && install.cmd
 ```
 
-When it asks you if you want to do anything else, you can say no and finalize the initialization of the authentication.
+### Configuring Amplify CLI
+
+Run the following command to start the configuration process:
 
 ```bash
- Do you want to configure advanced settings? (Use arrow keys)
-❯ No, I am done. 
-  Yes, I want to make some additional changes.
+amplify configure
 ```
 
-Once you see the following message, you can see you added the authentication to your project successfully.
+This command will ask you to sign into the AWS Console. Afterwards, select a region to create the project. After that, navigate to the [IAM User creation page](https://console.aws.amazon.com/iamv2/home#/users/create) if it's not already open.
+
+> Keep your terminal open until you come back to it at at later stage from where you left of.
+
+![User creation page](https://docs.amplify.aws/images/cli/user-creation/user-name.png)
+
+Add a user name and click on *Next*.
+
+![Policies page](https://docs.amplify.aws/images/cli/user-creation/user-permissions.png)
+
+Select **Attach policies directly** option and search for *AdministratorAccess-Amplify* and select it and navigate to review page.
+
+![Review page](https://docs.amplify.aws/images/cli/user-creation/user-review.png)
+
+Click on the *Create User* after reviewing the page.
+
+![User list page](https://docs.amplify.aws/images/cli/user-creation/user-list.png)
+
+Now click on the created user, on the list.
+
+![User details page](https://docs.amplify.aws/images/cli/user-creation/create-access-keys.png)
+
+First click on the *Security credentials* tab and click on the *Create access key* button at the bottom.
+
+![Access key page](https://docs.amplify.aws/images/cli/user-creation/ack-page.png)
+
+Select *Command Line Interface*, check the checkbox for the warning, and select *Next* and on the next page select *Create access key*.
+
+![Retrieve access key](https://docs.amplify.aws/images/cli/user-creation/access-keys-done.png)
+
+Copy these values and paste them into the terminal and give a profile name.
 
 ```bash
-✅ Successfully added auth resource ampligramdab1c31f locally
+:::code{language=bash showLineNumbers=false}
+Specify the AWS Region
+? region:  # Your preferred region
+Follow the instructions at
+https://docs.amplify.aws/cli/start/install/#configure-the-amplify-cli
+
+to complete the user creation in the AWS console
+https://console.aws.amazon.com/iamv2/home#/users/create
+
+Press Enter to continue
+
+Enter the access key of the newly created user:
+? accessKeyId:  # YOUR_ACCESS_KEY_ID
+? secretAccessKey:  # YOUR_SECRET_ACCESS_KEY
+This would update/create the AWS Profile in your local machine
+? Profile Name:  # (default)
+
+Successfully set up the new user.
 ```
 
-## Pushing the Changes to the Cloud
-All of the changes that you have made to your project are local. To push the changes to the cloud, run the following command:
+Now you are ready to use Amplify CLI.
+
+## [Amplify Studio](amplify_studio) 
+
+Amplify Studio is a visual development environment for building fullstack web and mobile apps.
+
+![Amplify Studio](/static/amplifystudio.png)
+
+## Key features of Amplify Studio
+
+### Create and observe your data visually
+If you want to design your data layer for your app, you can do it visually with Amplify Studio. You can create your data models, and then observe the data in real-time for your GraphQL API.
+
+![Amplify Studio Data](/static/studiodata.png)
+
+### Create Web Applications with Form Builder
+You can also create React applications with Amplify Studio. You can create forms and then generate React code for your application.
+
+![Amplify Studio Form Builder](/static/amplifyform.png)
+
+### Generate React Code with Figma to Code integration
+You can also generate React code from your Figma designs. You can use the Figma to Code integration to generate React code from your Figma designs.
+
+![Amplify Studio Figma to Code](/static/figmatocode.png)
+
+>Amplify Studio's UI features such as creating data and ui component builders are free. For pulling the data to your local machine, you will need to have Amplify CLI configured.
+
+## Initializing Amplify Project
+
+For starting off, you need to clone the starter project. You can clone the starter project from [here](https://github.com/salihgueler/Ampligram/tree/starter_project). After cloning the project, you need to initialize the project. Before initializing be sure the terminal is in the project directory.
 
 ```bash
-amplify push
+cd wherever/project/is/at/Ampligram
 ```
 
-> Alternatively you can also run it with the `-y` flag to skip the confirmation prompt.
+## Initializing Amplify Project
 
-After a few minutes, if you see the following message, you can see that you have successfully pushed the changes to the cloud.
+To initialize the project, you need to run the following command:
+
+```bash
+amplify init
+```
+
+First select a project name, you can also accept the suggested name by using the name in the parenthesis by clicking *Enter*:
+
+```bash
+Note: It is recommended to run this command from the root of your app directory
+? Enter a name for the project (Ampligram) 
+``` 
+
+Then you can either select the default configuration or you can change it by writing *n* later on:
+
+```bash
+The following configuration will be applied:
+
+Project information
+| Name: Ampligram
+| Environment: dev
+| Default editor: Visual Studio Code
+| App type: android
+| Res directory: app/src/main/res
+
+? Initialize the project with the above configuration? (Y/n) 
+```
+
+Select the default configuration by clicking *Enter*.
+
+```bash
+? Select the authentication method you want to use: (Use arrow keys)
+❯ AWS profile 
+```
+
+Select the *AWS profile* from the list and select the profile that you created before:
+
+```bash
+? Please choose the profile you want to use (default) 
+```
+
+Then wait for it to initialize the project. After the initialization is done, you can see the following message:
 
 ```bash
 Deployment state saved successfully.
+✔ Initialized provider successfully.
+✅ Initialized your environment successfully.
 ```
 
-## Adding Authentication to Project Libraries
-
-There are two ways to use authentication libraries with your project. One of them is to use the libraries by binding each functionality to your own UI. The other one is to use the pre-built UI components that are provided by the Amplify library. In this workshop, you will be using the pre-built UI components. However, you can check the official docs [here](https://docs.amplify.aws/lib/auth/getting-started/q/platform/android/) for the details about the library usage.
-
-To add the pre-built UI authentication libraries to your project, add the following dependencies to your `build.gradle` file and sync the libraries.
+Now it is time to initialize the Amplify Libraries to the project.
 
 ```groovy
+android {
+    compileOptions {
+        // Support for Java 8 features
+        coreLibraryDesugaringEnabled true
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
 dependencies {
-    implementation 'com.amplifyframework:aws-auth-cognito:2.7.1'
-    implementation 'com.amplifyframework.ui:authenticator:1.0.0-dev-preview.0'
+    // Amplify core dependency
+    implementation 'com.amplifyframework:core:2.5.0'
+
+    // Support for Java 8 features
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.1.5'
 }
 ```
 
-Once the sync is done, go to the *AmpligramApp* class and update the code in **onCreate** method like the following:
+Add the above code to the `build.gradle` file in the `app` directory. After adding the code, you need to sync the project.
+
+Lastly, update the `AmplifyApp` as the following:
 
 ```kotlin
-try { 
-  ++Amplify.addPlugin(AWSCognitoAuthPlugin())
-    Amplify.configure(applicationContext)
-    Log.i("Ampligram", "Initialized Amplify")
-} catch (error: AmplifyException) {
-    Log.e("Ampligram", "Could not initialize Amplify", error)
-}
-```
+import android.app.Application
+import android.util.Log
+import com.amplifyframework.AmplifyException
+import com.amplifyframework.core.Amplify
+import dagger.hilt.android.HiltAndroidApp
 
-Once you updated the code, go to the *MainActivity* class and wrap the code in **NavHost** method as following:
-
-```kotlin
-Authenticator {
-    val navController = rememberNavController()
-    NavHost(navController = navController, startDestination = "home") {
-        ...
-    }
-}
-```
-
-Lastly, let's add a sign-out functionality and show how one can use the auth libraries. To do that, update the *AmpligramTopAppBar* at the *ProfileScreen* function:
-
-```kotlin 
-AmpligramTopAppBar(
-    isBackButtonEnabled = isBackButtonEnabled,
-    onBackButtonClick = onBackButtonClick,
-    title = "Profile",
-  ++actions = {
-  ++    IconButton(onClick = onLogoutButtonClick) {
-  ++        Icon(Icons.Default.ExitToApp, contentDescription = "Profile")
-  ++    }
-  ++}
-)
-```
-
-And add the callback to the paramters of the function:
-
-```kotlin
-@Composable
-fun ProfileScreen(
-    isBackButtonEnabled: Boolean,
-    onBackButtonClick: () -> Unit,
-  ++onLogoutButtonClick: () -> Unit,
-    onImageClick: (String) -> Unit,
-    username: String,
-    profilePictureUrl: String,
-    photos: List<Photo>,
-) {
-    ...
-}
-```
-
-Update the function call from the MainActivity class as well for the *ProfilePage*:
-
-```kotlin
-onLogoutButtonClick = {
-    profileViewModel.logout()
-}
-```
-
-Add a new function to the *ProfileViewModel* class called *logout*:
-
-```kotlin
-fun logout() {
-    viewModelScope.launch {
-        userRepository.logout()
-    }
-}
-```
-
-And update the *UserRepository* interface as the following:
-
-```kotlin
-interface UserRepository {
-    suspend fun getCurrentUser(): Result<User>
-
-    suspend fun logout(): Result<Boolean>
-}
-```
-
-Lastly rename *FakeUserRepositoryImpl* to *UserRepositoryImpl* update the class to implement the new function using the Amplify library:
-
-```kotlin
-class UserRepositoryImpl : UserRepository {
-    override suspend fun getCurrentUser(): Result<User> {
-        return runCatching {
-            val user = Amplify.Auth.getCurrentUser()
-            return Result.success(
-                User(
-                    id = user.userId,
-                    username = user.username,
-                    profilePictureUrl = "https://pbs.twimg.com/profile_images/1636379155532222465/ppItDc5w_400x400.jpg"
-                )
-            )
-        }
-    }
-
-    override suspend fun logout(): Result<Boolean> {
-        return runCatching {
-            Amplify.Auth.signOut()
-            return Result.success(true)
+@HiltAndroidApp
+class AmpligramApp: Application() {
+    override fun onCreate() {
+        super.onCreate()
+        try {
+            Amplify.configure(applicationContext)
+            Log.i("Ampligram", "Initialized Amplify")
+        } catch (error: AmplifyException) {
+            Log.e("Ampligram", "Could not initialize Amplify", error)
         }
     }
 }
 ```
 
-And update every place that calls *getCurrentUser* function with the a call with viewModelScope
+When you run the app, if you see the following log, it means that you have successfully initialized the project:
 
-```kotlin
-viewModelScope.launch {
-    val currentUser = userRepository.getCurrentUser()
-    ...
-}
+```bash
+2023-11-03 14:00:00.000 12345-12345/dev.salih.ampligram I/Ampligram: Initialized Amplify
 ```
-
-If you run the application now, you should see the following.
-
-![Auth flow GIF](/static/authflow.gif)

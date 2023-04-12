@@ -2,15 +2,14 @@ package dev.salih.ampligram.ui.profile
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ExitToApp
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Scaffold
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -27,7 +26,6 @@ import dev.salih.ampligram.ui.components.photo.PhotoThumbnail
 fun ProfileScreen(
     isBackButtonEnabled: Boolean,
     onBackButtonClick: () -> Unit,
-    onLogoutButtonClick: () -> Unit,
     onImageClick: (String) -> Unit,
     username: String,
     profilePictureUrl: String,
@@ -38,20 +36,14 @@ fun ProfileScreen(
             AmpligramTopAppBar(
                 isBackButtonEnabled = isBackButtonEnabled,
                 onBackButtonClick = onBackButtonClick,
-                title = "Profile",
-                actions = {
-                    IconButton(onClick = onLogoutButtonClick) {
-                        Icon(Icons.Default.ExitToApp, contentDescription = "Profile")
-                    }
-                }
+                title = "Profile"
             )
         }
     ) {
         Column(
-            modifier = Modifier.padding(it).fillMaxWidth(),
+            modifier = Modifier.padding(it),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Spacer(modifier = Modifier.padding(8.dp))
             AsyncImage(
                 model = profilePictureUrl,
                 contentDescription = "Photo of $username",
