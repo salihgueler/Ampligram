@@ -17,47 +17,54 @@ In this workshop, you will learn how you can develop a photo sharing application
 - Android Studio version 4.0 or higher
 - Android SDK API level 24 (Android 7.0) or higher
 
-The Amplify Storage category provides an interface for managing user content for your app in public, protected, or private storage buckets. The Storage category comes with default built-in support for Amazon Simple Storage Service (S3). The Amplify CLI helps you to create and configure the storage buckets for your app. The Amplify AWS S3 Storage plugin leverages Amazon S3.
+The Amplify Auth category provides an interface for authenticating a user. Behind the scenes, it provides the necessary authorization to the other Amplify categories. It comes with default, built-in support for Amazon Cognito User Pool and Identity Pool. The Amplify CLI helps you create and configure the auth category with an authentication provider.
 
-## Adding Storage to Project Setup
+## Adding Authentication to Project Setup
 
-To add Storage to your project, run the following command in your project’s root folder:
-
-```bash
-amplify add storage
-```
-
-The CLI prompts you with the following questions:
+To add authentication to your project, run the following command:
 
 ```bash
-? Select from one of the below mentioned services: (Use arrow keys)
-❯ Content (Images, audio, video, etc.) 
-  NoSQL Database 
+amplify add auth
 ```
 
-Next it will ask you to provide a friendly name for your resource that will be used to label this category in the project (it will also give you a friendly name in case you can't come up with something):
+Like the other processes, authentication also will guide you through the process of adding authentication to your project. You will be asked to select the default configuration or select a social provider as well as configuring the app authentication manually. For this workshop you will be using the default.
 
 ```bash
-? Provide a friendly name for your resource that will be used to label this category in the project: › s320a9f80a
+Using service: Cognito, provided by: awscloudformation
+ 
+ The current configured provider is Amazon Cognito. 
+ 
+ Do you want to use the default authentication and security configuration? (Use arrow keys)
+❯ Default configuration 
+  Default configuration with Social Provider (Federation) 
+  Manual configuration 
+  I want to learn more. 
 ```
 
-Now it is time to provide a bucket name (it will also give you a friendly name in case you can't come up with something):
+Next, selecct the type of "sign in" that you want to use. No matter what you select, you will be expected to have email entry from user for approving the account. For this workshop, you will be using *username*.
 
 ```bash
-? Provide bucket name: › ampligramff006ab2bd654c0a867cd1159cedf0e5
+  How do you want users to be able to sign in? (Use arrow keys)
+❯ Username 
+  Email 
+  Phone Number 
+  Email or Phone Number 
+  I want to learn more. 
 ```
 
-Select only auth users to have access to the bucket for reading, deleting and writing:
+When it asks you if you want to do anything else, you can say no and finalize the initialization of the authentication.
 
-```bash 
-✔ Who should have access: · Auth users only
-? What kind of access do you want for Authenticated users? …  (Use arrow keys or type to filter)
- ● create/update
- ● read
-❯● delete
+```bash
+ Do you want to configure advanced settings? (Use arrow keys)
+❯ No, I am done. 
+  Yes, I want to make some additional changes.
 ```
 
-Select no to adding a lambda trigger and now you are set.
+Once you see the following message, you can see you added the authentication to your project successfully.
+
+```bash
+✅ Successfully added auth resource ampligramdab1c31f locally
+```
 
 ## Pushing the Changes to the Cloud
 All of the changes that you have made to your project are local. To push the changes to the cloud, run the following command:
@@ -74,13 +81,16 @@ After a few minutes, if you see the following message, you can see that you have
 Deployment state saved successfully.
 ```
 
-## Adding Storage to Project Libraries
+## Adding Authentication to Project Libraries
 
-To add storage libraries to your project, add the following dependencies to your `build.gradle` file and sync the libraries.
+There are two ways to use authentication libraries with your project. One of them is to use the libraries by binding each functionality to your own UI. The other one is to use the pre-built UI components that are provided by the Amplify library. In this workshop, you will be using the pre-built UI components. However, you can check the official docs [here](https://docs.amplify.aws/lib/auth/getting-started/q/platform/android/) for the details about the library usage.
+
+To add the pre-built UI authentication libraries to your project, add the following dependencies to your `build.gradle` file and sync the libraries.
 
 ```groovy
 dependencies {
-    implementation 'com.amplifyframework:aws-storage-s3:2.8.2'
+    implementation 'com.amplifyframework:aws-auth-cognito:2.7.1'
+    implementation 'com.amplifyframework.ui:authenticator:1.0.0-dev-preview.0'
 }
 ```
 
@@ -88,8 +98,7 @@ Once the sync is done, go to the *AmpligramApp* class and update the code in **o
 
 ```kotlin
 try { 
-  ++Amplify.addPlugin(AWSS3StoragePlugin())
-    Amplify.addPlugin(AWSCognitoAuthPlugin())
+  ++Amplify.addPlugin(AWSCognitoAuthPlugin())
     Amplify.configure(applicationContext)
     Log.i("Ampligram", "Initialized Amplify")
 } catch (error: AmplifyException) {
@@ -97,107 +106,112 @@ try {
 }
 ```
 
-## Uploading an image to S3
-
-The photo picker mechanism is already implemented to the app. Now we need to upload the selected image to S3.
-
-![Image Selection](/static/imageselection.png)
-
-To upload the image to S3, we need to create a function that takes the image file and returns the key of the uploaded image. Update the functions at the *PhotoRepository* interface like the following:
+Once you updated the code, go to the *MainActivity* class and wrap the code in **NavHost** method as following:
 
 ```kotlin
-/// Adds a photo to the list of photos.
-fun addPhoto(photoKey: String, description: String, username: String): Result<Unit>
-
-/// Uploads the photo to bucket
-suspend fun uploadImage(imageStream: InputStream) : Result<String>
-```
-
-Then implement the uploadImage function in the *FakePhotoRepositoryImpl* class like the following:
-
-> We will keep the name FakePhotoRepositoryImpl until we update all the functions in the following sections
-
-```kotlin
-@OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
-override suspend fun uploadImage(imageStream: InputStream): Result<String> {
-    return runCatching {
-        val photoId = UUID.randomUUID().toString()
-        Amplify.Storage.uploadInputStream("$photoId.png", imageStream).result()
-        photoId
+Authenticator {
+    val navController = rememberNavController()
+    NavHost(navController = navController, startDestination = "home") {
+        ...
     }
 }
 ```
 
-This will get an input stream from the image file and upload it to the S3 bucket. For keeping a reference to the file, we are using the photoId as the key. The photoId is a unique identifier for the image file generated by the UUID.
+Lastly, let's add a sign-out functionality and show how one can use the auth libraries. To do that, update the *AmpligramTopAppBar* at the *ProfileScreen* function:
 
-For providing an input stream out of the selected uri, first go to the AddImageBottomSheetContent function and update the submitting mechanism like the following:
-
-```kotlin
-if (selectedImageUri != null && value.isNotBlank()) {
-    val inputStream =
-        context.contentResolver.openInputStream(selectedImageUri!!)
-    value = ""
-    if (inputStream != null) {
-        onPhotoAdded(inputStream, value)
-    }
-    selectedImageUri = null
-}
+```kotlin 
+AmpligramTopAppBar(
+    isBackButtonEnabled = isBackButtonEnabled,
+    onBackButtonClick = onBackButtonClick,
+    title = "Profile",
+  ++actions = {
+  ++    IconButton(onClick = onLogoutButtonClick) {
+  ++        Icon(Icons.Default.ExitToApp, contentDescription = "Profile")
+  ++    }
+  ++}
+)
 ```
 
-And get the current context like the following at the top of the function:
+And add the callback to the paramters of the function:
 
 ```kotlin
-val context = LocalContext.current
-```
-
-Lastly, update each callback to return the input stream created.
-
-If you go ahead and run our application, you can see that the image is uploaded to the S3 bucket. To see the uploaded files, go to the Amplify Studio and select the File Browser.
-
-![File Browser](/static/filebrowser.gif)
-
-## List all uploaded files
-
-To list all the uploaded files, we need to update the *getPhotos* function in the *FakePhotoRepositoryImpl* class like the following:
-
-```kotlin
-override suspend fun getPhotos(): Result<List<Photo>> {
-    return runCatching {
-        val imageKeys = Amplify.Storage.list("")
-        val urls = imageKeys.items.map { Amplify.Storage.getUrl(it.key).url }
-        urls.forEachIndexed { index, url ->
-            val photo = Photo(
-                id = "${index + 1}",
-                description = "Description ${index + 1}",
-                username = "Username ${index + 1}",
-                url = url.toString(),
-                isFavorite = false,
-                comments = emptyList(),
-                location = "Berlin, Germany"
-            )
-            photos.add(photo)
-        }
-        return Result.success(photos)
-    }
-}
-```
-
-This will get you the list of the image keys that is uploaded earlier on and generate Photo objects out ot them.
-
-Be sure to update the function signature in the *PhotoRepository* interface as well.
-
-```kotlin
-suspend fun getPhotos(): Result<List<Photo>>
-```
-
-Lastly, call getPhotos function by using viewModelScope.launch in the each iteration:
-
-```kotlin
-viewModelScope.launch {
-    _uiState.value = ProfileUiState.Loading
-    val result = photoRepository.getPhotos()
+@Composable
+fun ProfileScreen(
+    isBackButtonEnabled: Boolean,
+    onBackButtonClick: () -> Unit,
+  ++onLogoutButtonClick: () -> Unit,
+    onImageClick: (String) -> Unit,
+    username: String,
+    profilePictureUrl: String,
+    photos: List<Photo>,
+) {
     ...
 }
 ```
 
-![List Photos](/static/listofimages.png)
+Update the function call from the MainActivity class as well for the *ProfilePage*:
+
+```kotlin
+onLogoutButtonClick = {
+    profileViewModel.logout()
+}
+```
+
+Add a new function to the *ProfileViewModel* class called *logout*:
+
+```kotlin
+fun logout() {
+    viewModelScope.launch {
+        userRepository.logout()
+    }
+}
+```
+
+And update the *UserRepository* interface as the following:
+
+```kotlin
+interface UserRepository {
+    suspend fun getCurrentUser(): Result<User>
+
+    suspend fun logout(): Result<Boolean>
+}
+```
+
+Lastly rename *FakeUserRepositoryImpl* to *UserRepositoryImpl* update the class to implement the new function using the Amplify library:
+
+```kotlin
+class UserRepositoryImpl : UserRepository {
+    override suspend fun getCurrentUser(): Result<User> {
+        return runCatching {
+            val user = Amplify.Auth.getCurrentUser()
+            return Result.success(
+                User(
+                    id = user.userId,
+                    username = user.username,
+                    profilePictureUrl = "https://pbs.twimg.com/profile_images/1636379155532222465/ppItDc5w_400x400.jpg"
+                )
+            )
+        }
+    }
+
+    override suspend fun logout(): Result<Boolean> {
+        return runCatching {
+            Amplify.Auth.signOut()
+            return Result.success(true)
+        }
+    }
+}
+```
+
+And update every place that calls *getCurrentUser* function with the a call with viewModelScope
+
+```kotlin
+viewModelScope.launch {
+    val currentUser = userRepository.getCurrentUser()
+    ...
+}
+```
+
+If you run the application now, you should see the following.
+
+![Auth flow GIF](/static/authflow.gif)
