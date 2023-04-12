@@ -15,6 +15,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.amplifyframework.ui.authenticator.ui.Authenticator
 import dagger.hilt.android.AndroidEntryPoint
 import dev.salih.ampligram.ui.home.HomeScreen
 import dev.salih.ampligram.ui.home.HomeUiState
@@ -38,86 +39,91 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-                    val navController = rememberNavController()
-                    NavHost(navController = navController, startDestination = "home") {
-                        composable("home") {
-                            val homeViewModel: HomeViewModel = hiltViewModel()
-                            val state = homeViewModel.uiState.collectAsState().value
-                            val photos = (state as? HomeUiState.Success)?.photos ?: emptyList()
+                    Authenticator {
+                        val navController = rememberNavController()
+                        NavHost(navController = navController, startDestination = "home") {
+                            composable("home") {
+                                val homeViewModel: HomeViewModel = hiltViewModel()
+                                val state = homeViewModel.uiState.collectAsState().value
+                                val photos = (state as? HomeUiState.Success)?.photos ?: emptyList()
 
-                            HomeScreen(
-                                onProfileButtonClicked = {
-                                    navController.navigate("profile")
-                                },
-                                onFavoriteClick = { id ->
-                                    homeViewModel.toggleFavorite(id)
-                                },
-                                onCommentClick = {
-                                    navController.navigate("photo-detail/${it}/shouldShowCommentEntry=true")
-                                },
-                                onImageClick = {
-                                    navController.navigate("photo-detail/${it}/shouldShowCommentEntry=false")
-                                },
-                                onLocationClick = { },
-                                onPhotoAdded = { photoUrl, description ->
-                                    homeViewModel.addPhoto(photoUrl, description)
-                                },
-                                isLoading = state is HomeUiState.Loading,
-                                photos = photos
-                            )
-                        }
-                        composable("profile") {
-                            val profileViewModel: ProfileViewModel = hiltViewModel()
-                            val state = profileViewModel.uiState.collectAsState().value
-                            val photos = (state as? ProfileUiState.Success)?.photos ?: emptyList()
-                            val user = (state as? ProfileUiState.Success)?.currentUser
-                            ProfileScreen(
-                                isBackButtonEnabled = navController.previousBackStackEntry != null,
-                                onBackButtonClick = {
-                                    navController.popBackStack()
-                                },
-                                username = user?.username ?: "Couldn't retrieve username",
-                                profilePictureUrl = user?.profilePictureUrl
-                                    ?: "Couldn't retrieve profile picture",
-                                photos = photos,
-                                onImageClick = {
-                                    navController.navigate("photo-detail/${it}/shouldShowCommentEntry=false")
-                                },
-                            )
-                        }
-                        composable(
-                            "photo-detail/{photoId}/shouldShowCommentEntry={shouldShowCommentEntry}",
-                            arguments = listOf(
-                                navArgument("shouldShowCommentEntry") {
-                                    type = NavType.BoolType
-                                },
-                            )
-                        ) {
-                            val profileViewModel: PhotoDetailViewModel = hiltViewModel()
-                            val photoId = it.arguments?.getString("photoId")
-                            val shouldShowCommentEntry =
-                                it.arguments?.getBoolean("shouldShowCommentEntry") ?: false
-                            if (photoId != null) {
-                                profileViewModel.getPhotoById(photoId)
+                                HomeScreen(
+                                    onProfileButtonClicked = {
+                                        navController.navigate("profile")
+                                    },
+                                    onFavoriteClick = { id ->
+                                        homeViewModel.toggleFavorite(id)
+                                    },
+                                    onCommentClick = {
+                                        navController.navigate("photo-detail/${it}/shouldShowCommentEntry=true")
+                                    },
+                                    onImageClick = {
+                                        navController.navigate("photo-detail/${it}/shouldShowCommentEntry=false")
+                                    },
+                                    onLocationClick = { },
+                                    onPhotoAdded = { photoUrl, description ->
+                                        homeViewModel.addPhoto(photoUrl, description)
+                                    },
+                                    isLoading = state is HomeUiState.Loading,
+                                    photos = photos
+                                )
                             }
-                            val state = profileViewModel.uiState.collectAsState().value
-                            val photo = (state as? PhotoDetailUiState.Success)?.photo
-                            PhotoDetailScreen(
-                                isBackButtonEnabled = navController.previousBackStackEntry != null,
-                                onBackButtonClick = {
-                                    navController.popBackStack()
-                                },
-                                photoUrl = photo?.url ?: "Photo url couldn't be retrieved",
-                                description = photo?.description
-                                    ?: "Description couldn't be retrieved",
-                                username = photo?.username ?: "Username couldn't be retrieved",
-                                shouldOpenCommentEntry = shouldShowCommentEntry,
-                                comments = photo?.comments ?: emptyList(),
-                                isLoading = state is PhotoDetailUiState.Loading,
-                                onCommentSubmitted = { comment ->
-                                    profileViewModel.addComment(photoId!!, comment)
-                                },
-                            )
+                            composable("profile") {
+                                val profileViewModel: ProfileViewModel = hiltViewModel()
+                                val state = profileViewModel.uiState.collectAsState().value
+                                val photos = (state as? ProfileUiState.Success)?.photos ?: emptyList()
+                                val user = (state as? ProfileUiState.Success)?.currentUser
+                                ProfileScreen(
+                                    isBackButtonEnabled = navController.previousBackStackEntry != null,
+                                    onBackButtonClick = {
+                                        navController.popBackStack()
+                                    },
+                                    username = user?.username ?: "Couldn't retrieve username",
+                                    profilePictureUrl = user?.profilePictureUrl
+                                        ?: "Couldn't retrieve profile picture",
+                                    photos = photos,
+                                    onImageClick = {
+                                        navController.navigate("photo-detail/${it}/shouldShowCommentEntry=false")
+                                    },
+                                    onLogoutButtonClick = {
+                                        profileViewModel.logout()
+                                    }
+                                )
+                            }
+                            composable(
+                                "photo-detail/{photoId}/shouldShowCommentEntry={shouldShowCommentEntry}",
+                                arguments = listOf(
+                                    navArgument("shouldShowCommentEntry") {
+                                        type = NavType.BoolType
+                                    },
+                                )
+                            ) {
+                                val profileViewModel: PhotoDetailViewModel = hiltViewModel()
+                                val photoId = it.arguments?.getString("photoId")
+                                val shouldShowCommentEntry =
+                                    it.arguments?.getBoolean("shouldShowCommentEntry") ?: false
+                                if (photoId != null) {
+                                    profileViewModel.getPhotoById(photoId)
+                                }
+                                val state = profileViewModel.uiState.collectAsState().value
+                                val photo = (state as? PhotoDetailUiState.Success)?.photo
+                                PhotoDetailScreen(
+                                    isBackButtonEnabled = navController.previousBackStackEntry != null,
+                                    onBackButtonClick = {
+                                        navController.popBackStack()
+                                    },
+                                    photoUrl = photo?.url ?: "Photo url couldn't be retrieved",
+                                    description = photo?.description
+                                        ?: "Description couldn't be retrieved",
+                                    username = photo?.username ?: "Username couldn't be retrieved",
+                                    shouldOpenCommentEntry = shouldShowCommentEntry,
+                                    comments = photo?.comments ?: emptyList(),
+                                    isLoading = state is PhotoDetailUiState.Loading,
+                                    onCommentSubmitted = { comment ->
+                                        profileViewModel.addComment(photoId!!, comment)
+                                    },
+                                )
+                            }
                         }
                     }
                 }
