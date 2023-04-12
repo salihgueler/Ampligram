@@ -89,7 +89,7 @@ To add the pre-built UI authentication libraries to your project, add the follow
 
 ```groovy
 dependencies {
-    implementation 'com.amplifyframework:aws-auth-cognito:2.8.2'
+    implementation 'com.amplifyframework:aws-auth-cognito:2.7.1'
     implementation 'com.amplifyframework.ui:authenticator:1.0.0-dev-preview.0'
 }
 ```
