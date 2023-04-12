@@ -60,8 +60,8 @@ class HomeViewModel @Inject constructor(
 
     fun addPhoto(photoStream: InputStream, description: String) {
         viewModelScope.launch {
-            val usernameResult = userRepository.getCurrentUser()
-            val photoKey = photoRepository.uploadImage(photoStream).getOrThrow()
+            viewModelScope.launch {
+            val usernameResult = userRepository.getCurrentUser()val photoKey = photoRepository.uploadImage(photoStream).getOrThrow()
             if (usernameResult.isSuccess) {
                 val result = photoRepository.addPhoto(
                     photoKey,

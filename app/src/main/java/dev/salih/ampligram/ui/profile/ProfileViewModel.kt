@@ -38,16 +38,18 @@ class ProfileViewModel @Inject constructor(
             _uiState.value = ProfileUiState.Loading
             val result = photoRepository.getPhotos()
             if (result.isSuccess) {
-                val currentUser = userRepository.getCurrentUser()
-                Log.e("Ampligram", currentUser.toString())
-                if (currentUser.isSuccess) {
-                    _uiState.value =
-                        ProfileUiState.Success(result.getOrThrow(), currentUser.getOrThrow())
-                } else {
-                    _uiState.value = ProfileUiState.Error(
-                        currentUser.exceptionOrNull()?.message
-                            ?: "Something went wrong while retrieving user information. $currentUser"
-                    )
+                viewModelScope.launch {
+                    val currentUser = userRepository.getCurrentUser()
+                    Log.e("Ampligram", currentUser.toString())
+                    if (currentUser.isSuccess) {
+                        _uiState.value =
+                            ProfileUiState.Success(result.getOrThrow(), currentUser.getOrThrow())
+                    } else {
+                        _uiState.value = ProfileUiState.Error(
+                            currentUser.exceptionOrNull()?.message
+                                ?: "Something went wrong while retrieving user information. $currentUser"
+                        )
+                    }
                 }
             } else {
                 _uiState.value = ProfileUiState.Error(
@@ -56,11 +58,11 @@ class ProfileViewModel @Inject constructor(
                 )
             }
         }
-    }
 
-    fun logout() {
-        viewModelScope.launch {
-            userRepository.logout()
+        fun logout() {
+            viewModelScope.launch {
+                userRepository.logout()
+            }
         }
     }
 }

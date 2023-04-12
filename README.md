@@ -17,115 +17,88 @@ In this workshop, you will learn how you can develop a photo sharing application
 - Android Studio version 4.0 or higher
 - Android SDK API level 24 (Android 7.0) or higher
 
-Amplify DataStore provides a programming model for leveraging shared and distributed data without writing additional code for offline and online scenarios, which makes working with distributed, cross-user data just as simple as working with local-only data.
+The Amplify Auth category provides an interface for authenticating a user. Behind the scenes, it provides the necessary authorization to the other Amplify categories. It comes with default, built-in support for Amazon Cognito User Pool and Identity Pool. The Amplify CLI helps you create and configure the auth category with an authentication provider.
 
-> DataStore allows you to start persisting data locally to your device with DataStore, even without an AWS account.
+## Adding Authentication to Project Setup
 
-## Adding DataStore to Project Setup
-
-To add DataStore to your project, you need to enable the GraphQL API category for the  
+To add authentication to your project, run the following command:
 
 ```bash
-amplify add api
+amplify add auth
 ```
 
-When prompted, select the GraphQL option:
+Like the other processes, authentication also will guide you through the process of adding authentication to your project. You will be asked to select the default configuration or select a social provider as well as configuring the app authentication manually. For this workshop you will be using the default.
 
 ```bash
-? Select from one of the below mentioned services: (Use arrow keys)
-❯ GraphQL
-REST 
+Using service: Cognito, provided by: awscloudformation
+ 
+ The current configured provider is Amazon Cognito. 
+ 
+ Do you want to use the default authentication and security configuration? (Use arrow keys)
+❯ Default configuration 
+  Default configuration with Social Provider (Federation) 
+  Manual configuration 
+  I want to learn more. 
 ```
 
-For enabling DataStore, you need to enable the conflict detection:
+Next, selecct the type of "sign in" that you want to use. No matter what you select, you will be expected to have email entry from user for approving the account. For this workshop, you will be using *username*.
 
 ```bash
-? Here is the GraphQL API that we will create. Select a setting to edit or continue 
-  Name: ampligram 
-  Authorization modes: API key (default, expiration time: 7 days from now) 
-❯ Conflict detection (required for DataStore): Disabled 
-  Continue 
+  How do you want users to be able to sign in? (Use arrow keys)
+❯ Username 
+  Email 
+  Phone Number 
+  Email or Phone Number 
+  I want to learn more. 
 ```
 
-Select the default resolution option as Auto Merge:
+When it asks you if you want to do anything else, you can say no and finalize the initialization of the authentication.
 
 ```bash
-? Select the default resolution strategy (Use arrow keys)
-❯ Auto Merge 
-  Optimistic Concurrency 
-  Custom Lambda 
-  Learn More 
+ Do you want to configure advanced settings? (Use arrow keys)
+❯ No, I am done. 
+  Yes, I want to make some additional changes.
 ```
 
-Now update the authorization mode to use Amazon Cognito User Pool:
+Once you see the following message, you can see you added the authentication to your project successfully.
 
 ```bash
-? Choose the default authorization type for the API 
-  API key 
-❯ Amazon Cognito User Pool 
-  IAM 
-  OpenID Connect 
-  Lambda 
+✅ Successfully added auth resource ampligramdab1c31f locally
 ```
 
-Next, select the *Continue* option and select the **Single object with fields** schema template:
-
-```bash
-? Choose a schema template: (Use arrow keys)
-❯ Single object with fields (e.g., “Todo” with ID, name, description) 
-  One-to-many relationship (e.g., “Blogs” with “Posts” and “Comments”) 
-  Objects with fine-grained access control (e.g., a project management app with owner-based authorization) 
-  Blank Schema 
-```
-
-Now, you need to update schema.graphql file like the following:
-
-```graphql
-type Photo @model @auth(rules: [{ allow: owner }]) {
-  id: ID!
-  photoKey: String!
-  description: String!
-  username: String!
-  location: String!
-  comments: [String!]!
-  isFavorite: Boolean!
-}
-```
-
-Now, you need to push the changes to the cloud:
+## Pushing the Changes to the Cloud
+All of the changes that you have made to your project are local. To push the changes to the cloud, run the following command:
 
 ```bash
 amplify push
 ```
 
-Once the changes are pushed, you can see that the deployment has happened for the GraphQL API and an endpoint URL is provided to us:
+> Alternatively you can also run it with the `-y` flag to skip the confirmation prompt.
+
+After a few minutes, if you see the following message, you can see that you have successfully pushed the changes to the cloud.
 
 ```bash
-✅ GraphQL schema compiled successfully.
-
-GraphQL endpoint: https://7s7xhllkkzhk3fyvo3xir2rmda.appsync-api.eu-central-1.amazonaws.com/graphql
-
-GraphQL transformer version: 2
+Deployment state saved successfully.
 ```
 
-One important point to mention here is that out of the provided GraphQL schema, it generated the Photo object in your project. The advantage of this is to provide you an abstraction over the data operations by giving you a chance to use an actual object.
+## Adding Authentication to Project Libraries
 
-> The generated objects are Java classes but you can still use them thanks to Kotlin’s interoperability.
+There are two ways to use authentication libraries with your project. One of them is to use the libraries by binding each functionality to your own UI. The other one is to use the pre-built UI components that are provided by the Amplify library. In this workshop, you will be using the pre-built UI components. However, you can check the official docs [here](https://docs.amplify.aws/lib/auth/getting-started/q/platform/android/) for the details about the library usage.
 
-## Adding DataStore to Project Libraries
-
-Now, you need to add the following dependencies to your project:
+To add the pre-built UI authentication libraries to your project, add the following dependencies to your `build.gradle` file and sync the libraries.
 
 ```groovy
 dependencies {
-    implementation 'com.amplifyframework:aws-datastore:2.7.1'
+    implementation 'com.amplifyframework:aws-auth-cognito:2.7.1'
+    implementation 'com.amplifyframework.ui:authenticator:1.0.0-dev-preview.0'
 }
 ```
-```groovy
-try {
-    ++ Amplify.addPlugin(AWSDataStorePlugin())
-    Amplify.addPlugin(AWSS3StoragePlugin())
-    Amplify.addPlugin(AWSCognitoAuthPlugin())
+
+Once the sync is done, go to the *AmpligramApp* class and update the code in **onCreate** method like the following:
+
+```kotlin
+try { 
+  ++Amplify.addPlugin(AWSCognitoAuthPlugin())
     Amplify.configure(applicationContext)
     Log.i("Ampligram", "Initialized Amplify")
 } catch (error: AmplifyException) {
@@ -133,278 +106,112 @@ try {
 }
 ```
 
-## Saving a Photo object with DataStore
-
-Before you implement the code for saving the photo object, first update the *FakePhotoRepositoryImpl* to *PhotoRepositoryImpl*, because at the end of this step, you should have real data served by the GraphQL API.
-
-First let's update the *PhotoRepository* interface like the following:
+Once you updated the code, go to the *MainActivity* class and wrap the code in **NavHost** method as following:
 
 ```kotlin
-interface PhotoRepository {
-    /// Returns the list of photos to be displayed in the home page.
-    suspend fun getPhotos(): Result<List<Photo>>
-
-    /// Toggles the favorite status of the photo with the given id.
-    suspend fun toggleFavorite(id: String): Result<Unit>
-
-    /// Returns the photo with the given id.
-    suspend fun getPhotoById(id: String): Result<Photo>
-
-    /// Adds a comment to the photo with the given id.
-    fun addComment(photoId: String, username: String, comment: String): Result<Photo>
-
-    /// Adds a photo to the list of photos.
-    suspend fun addPhoto(
-        photoKey: String,
-        description: String,
-        username: String,
-        location: String,
-    ): Result<Boolean>
-
-    /// Uploads the photo to bucket
-    suspend fun uploadImage(imageStream: InputStream): Result<String>
-}
-```
-
-Now, you need to update the *PhotoRepositoryImpl* class with **suspend** keywords.
-
-After you update them, you can update the *addPhoto*:
-
-```kotlin
-override suspend fun addPhoto(
-    photoKey: String,
-    description: String,
-    username: String,
-    location: String,
-): Result<Boolean> {
-    return runCatching {
-        val remotePhoto = RemotePhoto.builder()
-            .photoKey(photoKey)
-            .description(description)
-            .username(username)
-            .location(location)
-            .comments(emptyList())
-            .isFavorite(false)
-            .build()
-        Amplify.DataStore.save(remotePhoto)
-        return Result.success(true)
+Authenticator {
+    val navController = rememberNavController()
+    NavHost(navController = navController, startDestination = "home") {
+        ...
     }
 }
 ```
 
-You might be wondering why you have a **RemoteObject** when you did not have one before. The reason is that for preventing the confusion with the local object, you will import the generated photo object as RemotePhoto and it will be only used with the repository.
+Lastly, let's add a sign-out functionality and show how one can use the auth libraries. To do that, update the *AmpligramTopAppBar* at the *ProfileScreen* function:
 
-```kotlin
-import com.amplifyframework.datastore.generated.model.Photo as RemotePhoto
+```kotlin 
+AmpligramTopAppBar(
+    isBackButtonEnabled = isBackButtonEnabled,
+    onBackButtonClick = onBackButtonClick,
+    title = "Profile",
+  ++actions = {
+  ++    IconButton(onClick = onLogoutButtonClick) {
+  ++        Icon(Icons.Default.ExitToApp, contentDescription = "Profile")
+  ++    }
+  ++}
+)
 ```
 
-## Retrieving Photo objects with DataStore
-
-Now, you need to update the *getPhotos* method in the *PhotoRepositoryImpl* class:
+And add the callback to the paramters of the function:
 
 ```kotlin
-@OptIn(ExperimentalCoroutinesApi::class)
-override suspend fun getPhotos(): Result<List<Photo>> {
-    return runCatching {
-        val remotePhotos = Amplify.DataStore.query(RemotePhoto::class).toList()
-        val photos = remotePhotos.map { remotePhoto ->
-            val url = Amplify.Storage.getUrl("${remotePhoto.photoKey}.png").url.toString()
-            Photo(
-                id = remotePhoto.id,
-                description = remotePhoto.description,
-                username = remotePhoto.username,
-                url = url,
-                isFavorite = remotePhoto.isFavorite,
-                comments = emptyList(),
-                location = remotePhoto.location
+@Composable
+fun ProfileScreen(
+    isBackButtonEnabled: Boolean,
+    onBackButtonClick: () -> Unit,
+  ++onLogoutButtonClick: () -> Unit,
+    onImageClick: (String) -> Unit,
+    username: String,
+    profilePictureUrl: String,
+    photos: List<Photo>,
+) {
+    ...
+}
+```
+
+Update the function call from the MainActivity class as well for the *ProfilePage*:
+
+```kotlin
+onLogoutButtonClick = {
+    profileViewModel.logout()
+}
+```
+
+Add a new function to the *ProfileViewModel* class called *logout*:
+
+```kotlin
+fun logout() {
+    viewModelScope.launch {
+        userRepository.logout()
+    }
+}
+```
+
+And update the *UserRepository* interface as the following:
+
+```kotlin
+interface UserRepository {
+    suspend fun getCurrentUser(): Result<User>
+
+    suspend fun logout(): Result<Boolean>
+}
+```
+
+Lastly rename *FakeUserRepositoryImpl* to *UserRepositoryImpl* update the class to implement the new function using the Amplify library:
+
+```kotlin
+class UserRepositoryImpl : UserRepository {
+    override suspend fun getCurrentUser(): Result<User> {
+        return runCatching {
+            val user = Amplify.Auth.getCurrentUser()
+            return Result.success(
+                User(
+                    id = user.userId,
+                    username = user.username,
+                    profilePictureUrl = "https://pbs.twimg.com/profile_images/1636379155532222465/ppItDc5w_400x400.jpg"
+                )
             )
         }
-        return Result.success(photos)
+    }
+
+    override suspend fun logout(): Result<Boolean> {
+        return runCatching {
+            Amplify.Auth.signOut()
+            return Result.success(true)
+        }
     }
 }
 ```
 
-With this change, you only query photos from the DataStore and you do not need to query them from local instance anymore. 
-
-You will keep a reference to the photos until you clean up the rest of the functions. 
-
-## Query a single Photo object by ID
-
-Amplify Libraries support predicates to be able to get the item with a pre-condition. 
-
-Update the *getPhotoById* method in the *PhotoRepositoryImpl* class as the following:
+And update every place that calls *getCurrentUser* function with the a call with viewModelScope
 
 ```kotlin
-@OptIn(ExperimentalCoroutinesApi::class)
-override suspend fun getPhotoById(id: String): Result<Photo> {
-    return runCatching {
-        val remotePhoto =
-            Amplify.DataStore.query(
-                RemotePhoto::class,
-                Where.matches(RemotePhoto.ID.eq(id))
-            ).first()
-        val url = Amplify.Storage.getUrl("${remotePhoto.photoKey}.png").url.toString()
-        val photo = Photo(
-            id = remotePhoto.id,
-            description = remotePhoto.description,
-            username = remotePhoto.username,
-            url = url,
-            isFavorite = remotePhoto.isFavorite,
-            comments = emptyList(),
-            location = remotePhoto.location
-        )
-        return Result.success(photo)
-    }
+viewModelScope.launch {
+    val currentUser = userRepository.getCurrentUser()
+    ...
 }
 ```
 
-With the implementation above, you have queried the photos that matches an id. Since you know that each photo has a unique id, you can use the first item of the list.
+If you run the application now, you should see the following.
 
-## Updating an item with DataStore
-
-For updating a certain item, you need to use the copying mechanism of the generated model.
-
-```kotlin
-@OptIn(ExperimentalCoroutinesApi::class)
-override suspend fun toggleFavorite(id: String): Result<Unit> {
-    return runCatching {
-        val remotePhoto =
-            Amplify.DataStore.query(
-                RemotePhoto::class,
-                Where.matches(RemotePhoto.ID.eq(id))
-            ).toList().first()
-        val updatedPhoto = remotePhoto
-            .copyOfBuilder()
-            .isFavorite(!remotePhoto.isFavorite)
-            .build()
-        Amplify.DataStore.save(updatedPhoto)
-        return Result.success(Unit)
-    }
-}
-```
-
-The *.copyOfBuilder()* method creates a new builder with the same values as the current object. Then, you can update the values that you want to change and call the *.build()* method to create a new object with the updated values.
-
-Once you run the application now, you should be able to see that items are reacting to the favoriting action and persist it:
-
-![Uploaded items](/static/uploadeditems.png)
-
-## Creating a list of Comments inside the Photos with DataStore
-
-Each post has a comment when you open up the detail page. Start by updating the *schema.graphql* file:
-
-```graphql
-type Comment @model @auth(rules: [{allow: private}]) {
-  id: ID!
-  username: String!
-  comment: String!
-  photoID: ID! @index(name: "byPhoto")
-}
-
-type Photo @model @auth(rules: [{allow: private}]) {
-  id: ID!
-  photoKey: String!
-  description: String!
-  username: String!
-  location: String!
-  isFavorite: Boolean!
-  comments: [Comment] @hasMany(indexName: "byPhoto", fields: ["id"])
-}
-```
-
-The *Comment* type has a *photoID* field that is an index to the *Photo* type. Let's push these changes to the backend by calling `amplify push`.
-
-Next thing to do is to update the *addComment* function signature in *PhotoRepository* interface:
-
-```kotlin
-/// Adds a comment to the photo with the given id.
-suspend fun addComment(
-    photoId: String, 
-    username: String, 
-    comment: String
-): Result<Photo>
-```
-
-Afterwards, go to the *PhotoRepositoryImpl* class and update the *addComment* method implementation:
-
-```kotlin
-override suspend fun addComment(
-    photoId: String,
-    username: String,
-    comment: String
-): Result<Photo> {
-    return runCatching {
-        val remoteComment = RemoteComment.builder()
-            .username(username)
-            .comment(comment)
-            .photoId(photoId)
-            .build()
-        Amplify.DataStore.save(remoteComment)
-        val photo = getPhotoById(photoId).getOrThrow()
-        return Result.success(photo)
-    }
-}
-```
-
-The implementation above does the following: 
-
-You create a new comment object and save it to the DataStore. Then, you query the photo with the given id and return it.
-
-## Running custom GraphQL queries
-When you want to reach out to the information requiring nested data, there are two ways to reach out to that data, you can either run a query for each object that you want to reach out or you need to run a custom GraphQL query. 
-
-The first approach is not efficient since you need to run a query for each object that you want to reach out. The reason that you need to do a call for getting nested data is that the querying objects does not work in a recursive fashion to bring all related data.
-
-Update the *getPhotoById* method in the *PhotoRepositoryImpl* class as the following to get the photo with the comments with a single call:
-
-```kotlin
-override suspend fun getPhotoById(id: String): Result<Photo> {
-    return runCatching {
-        val document = ("query getPhoto(\$id: ID!) { "
-                + "getPhoto(id: \$id) { "
-                + "id "
-                + "photoKey "
-                + "description "
-                + "username "
-                + "location "
-                + "isFavorite "
-                + "comments { "
-                + "items { "
-                + "id "
-                + "username "
-                + "comment "
-                + "photoID "
-                + "} "
-                + "} "
-                + "} "
-                + "}")
-        val request = SimpleGraphQLRequest<RemotePhoto>(
-            document,
-            mapOf("id" to id),
-            RemotePhoto::class.java,
-            GsonVariablesSerializer()
-        )
-        val remotePhoto = Amplify.API.query(request).data
-        val url = Amplify.Storage.getUrl("${remotePhoto.photoKey}.png").url.toString()
-        val photo = Photo(
-            id = remotePhoto.id,
-            description = remotePhoto.description,
-            username = remotePhoto.username,
-            url = url,
-            isFavorite = remotePhoto.isFavorite,
-            comments = remotePhoto.comments?.map { remoteComment ->
-                Comment(
-                    id = remoteComment.id,
-                    username = remoteComment.username,
-                    comment = remoteComment.comment
-                )
-            } ?: emptyList(),
-            location = remotePhoto.location
-        )
-        return Result.success(photo)
-    }
-}
-```
-
-
-
+![Auth flow GIF](/static/authflow.gif)
