@@ -1,0 +1,151 @@
+# this is an auto generated file. This will be overwritten
+mutation CreateComment(
+  $input: CreateCommentInput!
+  $condition: ModelCommentConditionInput
+) {
+  createComment(input: $input, condition: $condition) {
+    id
+    username
+    comment
+    photoID
+    createdAt
+    updatedAt
+    _version
+    _deleted
+    _lastChangedAt
+  }
+}
+mutation UpdateComment(
+  $input: UpdateCommentInput!
+  $condition: ModelCommentConditionInput
+) {
+  updateComment(input: $input, condition: $condition) {
+    id
+    username
+    comment
+    photoID
+    createdAt
+    updatedAt
+    _version
+    _deleted
+    _lastChangedAt
+  }
+}
+mutation DeleteComment(
+  $input: DeleteCommentInput!
+  $condition: ModelCommentConditionInput
+) {
+  deleteComment(input: $input, condition: $condition) {
+    id
+    username
+    comment
+    photoID
+    createdAt
+    updatedAt
+    _version
+    _deleted
+    _lastChangedAt
+  }
+}
+mutation CreatePhoto(
+  $input: CreatePhotoInput!
+  $condition: ModelPhotoConditionInput
+) {
+  createPhoto(input: $input, condition: $condition) {
+    id
+    photoKey
+    description
+    username
+    location
+    isFavorite
+    comments {
+      items {
+        id
+        username
+        comment
+        photoID
+        createdAt
+        updatedAt
+        _version
+        _deleted
+        _lastChangedAt
+      }
+      nextToken
+      startedAt
+    }
+    createdAt
+    updatedAt
+    _version
+    _deleted
+    _lastChangedAt
+    owner
+  }
+}
+mutation UpdatePhoto(
+  $input: UpdatePhotoInput!
+  $condition: ModelPhotoConditionInput
+) {
+  updatePhoto(input: $input, condition: $condition) {
+    id
+    photoKey
+    description
+    username
+    location
+    isFavorite
+    comments {
+      items {
+        id
+        username
+        comment
+        photoID
+        createdAt
+        updatedAt
+        _version
+        _deleted
+        _lastChangedAt
+      }
+      nextToken
+      startedAt
+    }
+    createdAt
+    updatedAt
+    _version
+    _deleted
+    _lastChangedAt
+    owner
+  }
+}
+mutation DeletePhoto(
+  $input: DeletePhotoInput!
+  $condition: ModelPhotoConditionInput
+) {
+  deletePhoto(input: $input, condition: $condition) {
+    id
+    photoKey
+    description
+    username
+    location
+    isFavorite
+    comments {
+      items {
+        id
+        username
+        comment
+        photoID
+        createdAt
+        updatedAt
+        _version
+        _deleted
+        _lastChangedAt
+      }
+      nextToken
+      startedAt
+    }
+    createdAt
+    updatedAt
+    _version
+    _deleted
+    _lastChangedAt
+    owner
+  }
+}

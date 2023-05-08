@@ -54,7 +54,8 @@ dependencies {
     implementation 'com.amplifyframework:core-kotlin:2.8.2'
     implementation 'com.amplifyframework:aws-auth-cognito:2.8.2'
     implementation 'com.amplifyframework:aws-storage-s3:2.8.2'
-    implementation 'com.amplifyframework:aws-storage-s3:2.7.1'
+    implementation 'com.amplifyframework:aws-datastore:2.8.2'
+    implementation 'com.amplifyframework:aws-api:2.8.2'
     // Support for Java 8 features
     coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.0.3'
     // Amplify UI Library
