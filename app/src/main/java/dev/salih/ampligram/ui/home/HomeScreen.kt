@@ -35,7 +35,10 @@ fun HomeScreen(
     isLoading: Boolean,
 ) {
     val modalBottomSheetState =
-        rememberModalBottomSheetState(initialValue = ModalBottomSheetValue.Hidden)
+        rememberModalBottomSheetState(
+            initialValue = ModalBottomSheetValue.Hidden,
+            skipHalfExpanded = true
+        )
     val coroutineScope = rememberCoroutineScope()
     ModalBottomSheetLayout(
         sheetContent = {
