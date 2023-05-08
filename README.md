@@ -16,3 +16,5 @@ In this workshop, you will learn how you can develop a photo sharing application
 - AWS Account
 - Android Studio version 4.0 or higher
 - Android SDK API level 24 (Android 7.0) or higher
+- AWS Amplify initialization from the previous steps.
+
