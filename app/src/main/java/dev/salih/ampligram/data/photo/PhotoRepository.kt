@@ -8,25 +8,16 @@ interface PhotoRepository {
     suspend fun getPhotos(): Result<List<Photo>>
 
     /// Toggles the favorite status of the photo with the given id.
-    suspend fun toggleFavorite(id: String): Result<Unit>
+    fun toggleFavorite(id: String): Result<Unit>
 
     /// Returns the photo with the given id.
-    suspend fun getPhotoById(id: String): Result<Photo>
+    fun getPhotoById(id: String): Result<Photo>
 
     /// Adds a comment to the photo with the given id.
-    suspend fun addComment(
-        photoId: String,
-        username: String,
-        comment: String
-    ): Result<Photo>
+    fun addComment(photoId: String, username: String, comment: String): Result<Photo>
 
     /// Adds a photo to the list of photos.
-    suspend fun addPhoto(
-        photoKey: String,
-        description: String,
-        username: String,
-        location: String,
-    ): Result<Boolean>
+    fun addPhoto(photoKey: String, description: String, username: String): Result<Unit>
 
     /// Uploads the photo to bucket
     suspend fun uploadImage(imageStream: InputStream): Result<String>

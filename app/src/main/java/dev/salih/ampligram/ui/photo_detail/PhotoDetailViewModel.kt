@@ -28,16 +28,14 @@ class PhotoDetailViewModel @Inject constructor(
     val uiState: StateFlow<PhotoDetailUiState> = _uiState.asStateFlow()
 
     fun getPhotoById(id: String) {
-        viewModelScope.launch {
-            val result = photoRepository.getPhotoById(id)
-            if (result.isSuccess) {
-                _uiState.value = PhotoDetailUiState.Success(result.getOrThrow())
-            } else {
-                _uiState.value = PhotoDetailUiState.Error(
-                    result.exceptionOrNull()?.message
-                        ?: "Something went wrong while retrieving photo. $result"
-                )
-            }
+        val result = photoRepository.getPhotoById(id)
+        if (result.isSuccess) {
+            _uiState.value = PhotoDetailUiState.Success(result.getOrThrow())
+        } else {
+            _uiState.value = PhotoDetailUiState.Error(
+                result.exceptionOrNull()?.message
+                    ?: "Something went wrong while retrieving photo. $result"
+            )
         }
     }
 

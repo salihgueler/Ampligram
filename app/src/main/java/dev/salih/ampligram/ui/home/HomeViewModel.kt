@@ -48,15 +48,13 @@ class HomeViewModel @Inject constructor(
     }
 
     fun toggleFavorite(id: String) {
-        viewModelScope.launch {
-            val result = photoRepository.toggleFavorite(id)
-            if (result.isSuccess) {
-                getPhotos()
-            } else {
-                _uiState.value = HomeUiState.Error(
-                    result.exceptionOrNull()?.message ?: "Something went wrong. $result"
-                )
-            }
+        val result = photoRepository.toggleFavorite(id)
+        if (result.isSuccess) {
+            getPhotos()
+        } else {
+            _uiState.value = HomeUiState.Error(
+                result.exceptionOrNull()?.message ?: "Something went wrong. $result"
+            )
         }
     }
 
@@ -68,8 +66,7 @@ class HomeViewModel @Inject constructor(
                 val result = photoRepository.addPhoto(
                     photoKey,
                     description,
-                    usernameResult.getOrThrow().username,
-                    "Berlin, Germany",
+                    usernameResult.getOrThrow().username
                 )
                 if (result.isSuccess) {
                     getPhotos()

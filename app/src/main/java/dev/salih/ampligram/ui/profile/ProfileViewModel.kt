@@ -1,5 +1,6 @@
 package dev.salih.ampligram.ui.profile
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -38,6 +39,7 @@ class ProfileViewModel @Inject constructor(
             val result = photoRepository.getPhotos()
             if (result.isSuccess) {
                 val currentUser = userRepository.getCurrentUser()
+                Log.e("Ampligram", currentUser.toString())
                 if (currentUser.isSuccess) {
                     _uiState.value =
                         ProfileUiState.Success(result.getOrThrow(), currentUser.getOrThrow())
