@@ -80,7 +80,7 @@ To add storage libraries to your project, add the following dependencies to your
 
 ```groovy
 dependencies {
-    implementation 'com.amplifyframework:aws-storage-s3:2.7.1'
+    implementation 'com.amplifyframework:aws-storage-s3:2.8.2'
 }
 ```
 
