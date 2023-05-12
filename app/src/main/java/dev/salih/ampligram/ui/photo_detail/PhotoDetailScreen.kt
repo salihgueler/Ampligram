@@ -9,6 +9,12 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
+import androidx.compose.material3.Divider
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
@@ -28,6 +34,7 @@ import dev.salih.ampligram.model.Comment
 import dev.salih.ampligram.ui.components.common.AmpligramTopAppBar
 import dev.salih.ampligram.ui.components.common.CenteredCircularProgressIndicator
 
+@OptIn(ExperimentalMaterial3Api::class)
 @ExperimentalComposeUiApi
 @Composable
 fun PhotoDetailScreen(
@@ -75,26 +82,26 @@ fun PhotoDetailScreen(
                 Text(
                     text = "Taken by $username",
                     modifier = Modifier.padding(8.dp),
-                    style = MaterialTheme.typography.h3.copy(fontWeight = FontWeight.Bold)
+                    style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold)
                 )
                 Divider()
                 if (comments.isNotEmpty())
                     Text(
                         text = "Comments",
                         modifier = Modifier.padding(8.dp),
-                        style = MaterialTheme.typography.body1.copy(fontWeight = FontWeight.Bold)
+                        style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold)
                     )
                 LazyColumn(modifier = Modifier.weight(1f)) {
                     items(comments) { comment ->
                         Text(
                             text = comment.comment,
                             modifier = Modifier.padding(8.dp),
-                            style = MaterialTheme.typography.body1
+                            style = MaterialTheme.typography.bodyLarge
                         )
                         Text(
                             text = comment.username,
                             modifier = Modifier.padding(8.dp),
-                            style = MaterialTheme.typography.body2.copy(fontWeight = FontWeight.Bold)
+                            style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold)
                         )
                         Divider()
                     }

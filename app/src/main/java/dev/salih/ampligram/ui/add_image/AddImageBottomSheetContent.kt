@@ -10,10 +10,20 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Create
-import androidx.compose.runtime.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.Divider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -58,7 +68,7 @@ fun AddImageBottomSheetContent(
         Text(
             text = "Add a New Photo",
             modifier = Modifier.padding(bottom = 8.dp, top = 8.dp),
-            style = MaterialTheme.typography.h6
+            style = MaterialTheme.typography.headlineLarge
         )
         Divider(
             modifier = Modifier.padding(bottom = 16.dp)
@@ -68,7 +78,7 @@ fun AddImageBottomSheetContent(
             modifier = Modifier
                 .border(
                     width = 2.dp,
-                    color = MaterialTheme.colors.primary,
+                    color = MaterialTheme.colorScheme.primary,
                     shape = RoundedCornerShape(5.dp)
                 )
                 .height(200.dp)

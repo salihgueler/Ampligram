@@ -7,9 +7,10 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Scaffold
-import androidx.compose.material.Text
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -22,6 +23,7 @@ import dev.salih.ampligram.model.Photo
 import dev.salih.ampligram.ui.components.common.AmpligramTopAppBar
 import dev.salih.ampligram.ui.components.photo.PhotoThumbnail
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(
     isBackButtonEnabled: Boolean,
@@ -54,7 +56,7 @@ fun ProfileScreen(
             Text(
                 text = username,
                 modifier = Modifier.padding(8.dp),
-                style = MaterialTheme.typography.body1.copy(fontWeight = FontWeight.Bold)
+                style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold)
             )
             Spacer(modifier = Modifier.padding(8.dp))
             LazyVerticalGrid(
