@@ -62,27 +62,29 @@ class HomeViewModel @Inject constructor(
 
     fun addPhoto(photoStream: InputStream, description: String) {
         viewModelScope.launch {
-            viewModelScope.launch {val usernameResult = userRepository.getCurrentUser()
-            val photoKey = photoRepository.uploadImage(photoStream).getOrThrow()
-            if (usernameResult.isSuccess) {
-                val result = photoRepository.addPhoto(
-                    photoKey,
-                    description,
-                    usernameResult.getOrThrow().username,
-                    "Berlin, Germany",
-                )
-                if (result.isSuccess) {
-                    getPhotos()
+            viewModelScope.launch {
+                val usernameResult = userRepository.getCurrentUser()
+                val photoKey = photoRepository.uploadImage(photoStream).getOrThrow()
+                if (usernameResult.isSuccess) {
+                    val result = photoRepository.addPhoto(
+                        photoKey,
+                        description,
+                        usernameResult.getOrThrow().username,
+                        "Berlin, Germany",
+                    )
+                    if (result.isSuccess) {
+                        getPhotos()
+                    } else {
+                        _uiState.value = HomeUiState.Error(
+                            result.exceptionOrNull()?.message ?: "Something went wrong. $result"
+                        )
+                    }
                 } else {
                     _uiState.value = HomeUiState.Error(
-                        result.exceptionOrNull()?.message ?: "Something went wrong. $result"
+                        usernameResult.exceptionOrNull()?.message
+                            ?: "Something went wrong. $usernameResult"
                     )
                 }
-            } else {
-                _uiState.value = HomeUiState.Error(
-                    usernameResult.exceptionOrNull()?.message
-                        ?: "Something went wrong. $usernameResult"
-                )
             }
         }
     }
