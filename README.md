@@ -249,20 +249,26 @@ Now it is time to initialize the Amplify Libraries to the project.
 
 ```groovy
 android {
-    compileOptions {
-        // Support for Java 8 features
-        coreLibraryDesugaringEnabled true
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
-    }
+  compileOptions {
+    // Support for Java 8 features
+    coreLibraryDesugaringEnabled true
+
+    // If the target is 1.8 or higher
+    // sourceCompatibility JavaVersion.VERSION_17
+    // targetCompatibility JavaVersion.VERSION_17
+
+    // Otherwise use the following
+    sourceCompatibility JavaVersion.VERSION_1_8
+    targetCompatibility JavaVersion.VERSION_1_8
+  }
 }
 
 dependencies {
-    // Amplify core dependency
-    implementation 'com.amplifyframework:core-kotlin:2.7.1'
+  // Amplify core dependency
+  implementation 'com.amplifyframework:core-kotlin:2.8.2'
 
-    // Support for Java 8 features
-    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.1.5'
+  // Support for Java 8 features
+  coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.0.3'
 }
 ```
 
@@ -278,7 +284,7 @@ import com.amplifyframework.core.Amplify
 import dagger.hilt.android.HiltAndroidApp
 
 @HiltAndroidApp
-class AmpligramApp: Application() {
+class AmpligramApp : Application() {
     override fun onCreate() {
         super.onCreate()
         try {
@@ -294,5 +300,5 @@ class AmpligramApp: Application() {
 When you run the app, if you see the following log, it means that you have successfully initialized the project:
 
 ```bash
-2023-11-03 14:00:00.000 12345-12345/dev.salih.ampligram I/Ampligram: Initialized Amplify
+dev.salih.ampligram I/Ampligram: Initialized Amplify
 ```
