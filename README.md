@@ -38,7 +38,7 @@ These libraries are powered by the AWS cloud and offer a pluggable model which c
 
 **For Android AWS Amplify supports the following categories:**
 
-![Amplify Libraries](amplify_libraries)
+![Amplify Libraries](static/amplifylibraries.png)
 
 - **Analytics**
     - The Analytics category enables you to collect analytics data for your App. The Analytics category comes with built-in support for Amazon Pinpoint and Amazon Kinesis (Kinesis support is currently only available in the Amplify JavaScript library).
@@ -139,7 +139,6 @@ Select *Command Line Interface*, check the checkbox for the warning, and select 
 Copy these values and paste them into the terminal and give a profile name.
 
 ```bash
-:::code{language=bash showLineNumbers=false}
 Specify the AWS Region
 ? region:  # Your preferred region
 Follow the instructions at
